@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dua Viewer Prototype</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f4f4f9;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* The Arabic Styling */
+        .arabic {
+            direction: rtl;
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            line-height: 1.8;
+            font-family: "Times New Roman", serif;
+            /* Browsers handle Arabic well with serif defaults */
+        }
+
+        .roman {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        .english {
+            color: #34495e;
+            line-height: 1.5;
+        }
+
+        .verse-no {
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 id="dua-title">Loading...</h1>
+    <div id="container"></div>
+
+    const duaId = '1074'; // Ensure this matches a filename in your folder
+
+    async function loadDua() {
+    const container = document.getElementById('container');
+    const titleHeader = document.getElementById('dua-title');
+
+    try {
+    const url = `./duas_data/${duaId}.json`;
+    console.log("Attempting to fetch:", url);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status} - Check if the file exists.`);
+    }
+
+    const data = await response.json();
+    titleHeader.innerText = data.title.en;
+
+    data.verses.forEach(v => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+    <span class="verse-no">Verse ${v.no}</span>
+    <div class="arabic">${v.ar}</div>
+    <div class="roman">${v.ro}</div>
+    <div class="english">${v.en}</div>
+    `;
+    container.appendChild(div);
+    });
+    } catch (err) {
+    titleHeader.innerText = "Error: " + err.message;
+    console.error("Full Error Details:", err);
+    container.innerHTML = `<p style="color:red"><b>Check:</b><br>
+        1. Is the Python server running?<br>
+        2. Does 1074.json exist in the 'duas_data' folder?<br>
+        3. Open F12 Console for details.</p>`;
+    }
+    }
+
+    loadDua();
+</body>
+
+</html>
