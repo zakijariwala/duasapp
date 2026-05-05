@@ -1,109 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dua Viewer Prototype</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background: #f4f4f9;
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Raaz" />
+  <meta name="description" content="Supplications, Surahs & Ziyarat — Raaz-o-Neyaz" />
 
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+  <title>Raaz-o-Neyaz</title>
 
-        /* The Arabic Styling */
-        .arabic {
-            direction: rtl;
-            font-size: 2rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            line-height: 1.8;
-            font-family: "Times New Roman", serif;
-            /* Browsers handle Arabic well with serif defaults */
-        }
-
-        .roman {
-            font-style: italic;
-            color: #7f8c8d;
-            margin-bottom: 8px;
-        }
-
-        .english {
-            color: #34495e;
-            line-height: 1.5;
-        }
-
-        .verse-no {
-            font-weight: bold;
-            color: #e74c3c;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
-    </style>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
-    <h1 id="dua-title">Loading...</h1>
-    <div id="container"></div>
+<div id="app">
 
-    const duaId = '1074'; // Ensure this matches a filename in your folder
+  <!-- Top bar -->
+  <header id="topbar">
+    <button id="back-btn" class="back-btn" aria-label="Go back">‹</button>
+    <span class="logo">Raaz-o-Neyaz</span>
+    <span id="topbar-title" class="bar-title" style="display:none"></span>
+    <button id="settings-toggle" aria-label="Settings">⚙️</button>
+  </header>
 
-    async function loadDua() {
-    const container = document.getElementById('container');
-    const titleHeader = document.getElementById('dua-title');
+  <!-- Settings modal -->
+  <div id="settings-overlay" class="settings-overlay" style="display:none"></div>
+  <div id="settings-modal" class="settings-modal" style="display:none">
+    <div class="settings-header">
+      <span class="settings-title">Settings</span>
+      <button id="settings-close" class="settings-close" aria-label="Close settings">✕</button>
+    </div>
 
-    try {
-    const url = `./duas_data/${duaId}.json`;
-    console.log("Attempting to fetch:", url);
+    <div class="settings-section">
+      <div class="settings-label">Languages</div>
+      <label class="settings-check">
+        <input type="checkbox" id="lang-en" checked />
+        <span class="checkmark"></span>
+        <span>English</span>
+      </label>
+      <label class="settings-check">
+        <input type="checkbox" id="lang-rurdu" checked />
+        <span class="checkmark"></span>
+        <span>Roman Urdu</span>
+      </label>
+      <label class="settings-check">
+        <input type="checkbox" id="lang-urdu" checked />
+        <span class="checkmark"></span>
+        <span>اردو (Urdu)</span>
+      </label>
+    </div>
 
-    const response = await fetch(url);
+    <div class="settings-section">
+      <div class="settings-label">Arabic Font Size</div>
+      <div class="slider-row">
+        <span class="slider-val" id="arabic-size-val">1.75</span>
+        <input type="range" id="arabic-size-slider" min="1" max="3.5" step="0.05" value="1.75" />
+      </div>
+    </div>
 
-    if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status} - Check if the file exists.`);
-    }
+    <div class="settings-section">
+      <div class="settings-label">Translation Font Size</div>
+      <div class="slider-row">
+        <span class="slider-val" id="trans-size-val">0.9</span>
+        <input type="range" id="trans-size-slider" min="0.6" max="1.8" step="0.05" value="0.9" />
+      </div>
+    </div>
+  </div>
 
-    const data = await response.json();
-    titleHeader.innerText = data.title.en;
+  <!-- Global search bar (shown on all views except reader) -->
+  <div id="global-search-bar" class="global-search-bar">
+    <span class="global-search-icon">🔍</span>
+    <input type="search" id="global-search-input" placeholder="Search duas, surahs…" autocomplete="off" />
+    <button id="global-search-clear" class="search-clear-btn global-search-clear" aria-label="Clear search">✕</button>
+    <button id="global-search-dismiss" class="search-dismiss-btn" aria-label="Dismiss search">Done</button>
+    <label class="deep-search-toggle" title="Search inside all dua content">
+      <input type="checkbox" id="deep-search-check" />
+      <span class="deep-checkmark"></span>
+      <span class="deep-label">Deep</span>
+    </label>
+  </div>
 
-    data.verses.forEach(v => {
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.innerHTML = `
-    <span class="verse-no">Verse ${v.no}</span>
-    <div class="arabic">${v.ar}</div>
-    <div class="roman">${v.ro}</div>
-    <div class="english">${v.en}</div>
-    `;
-    container.appendChild(div);
-    });
-    } catch (err) {
-    titleHeader.innerText = "Error: " + err.message;
-    console.error("Full Error Details:", err);
-    container.innerHTML = `<p style="color:red"><b>Check:</b><br>
-        1. Is the Python server running?<br>
-        2. Does 1074.json exist in the 'duas_data' folder?<br>
-        3. Open F12 Console for details.</p>`;
-    }
-    }
+  <!-- Main content area -->
+  <main id="content" role="main"></main>
 
-    loadDua();
+  <!-- Bottom navigation -->
+  <nav id="bottom-nav" aria-label="Main navigation">
+    <button class="nav-btn active" data-tab="home" aria-label="Home">
+      <span class="icon">🏠</span>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" data-tab="search" aria-label="Search">
+      <span class="icon">🔍</span>
+      <span>Search</span>
+    </button>
+    <button class="nav-btn" data-tab="bookmarks" aria-label="Bookmarks">
+      <span class="icon">⭐</span>
+      <span>Saved</span>
+    </button>
+  </nav>
+
+</div>
+
+<script src="app.js"></script>
 </body>
-
 </html>
