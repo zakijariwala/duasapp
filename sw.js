@@ -1,6 +1,6 @@
 /* sw.js — Raaz-o-Neyaz Service Worker */
 
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CORE = `core-${VERSION}`;
 const LINES = `lines-${VERSION}`;
 

@@ -5,7 +5,7 @@
 
 /* ── Design Tokens ─────────────────────────────────────────────────────────── */
 :root {
-  /* Palette */
+  /* Default Theme (Dark) */
   --bg:          #0d1117;
   --bg-card:     #161b22;
   --bg-elevated: #1c2333;
@@ -40,6 +40,33 @@
   --arabic-size: 1.75rem;
   --arabic-line: 2.4;
   --trans-size: 0.9rem;
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+  --bg:          #f0f2f5;
+  --bg-card:     #ffffff;
+  --bg-elevated: #f7f9fa;
+  --border:      #d1d9e0;
+  --text-primary:  #1c1e21;
+  --text-secondary: #5a5d61;
+  --text-muted:  #8a8d91;
+  --gold:        #a67c00; 
+  --gold-dim:    #b8860b; 
+  
+  /* High contrast colors for Light Mode */
+  --accent-green: #116329;
+  --accent-red:   #a01b21;
+  --accent-blue:  #0550ae;
+  --tajweed-green: #116329;
+  --tajweed-red:   #a01b21;
+  --tajweed-blue:  #0550ae;
+}
+
+/* Ensure .is-red blocks are distinct but readable in Light Mode */
+body.light-mode .line-block.is-red {
+  background: #fff0f0;
+  border-left-color: var(--accent-red);
 }
 
 /* ── Reset ─────────────────────────────────────────────────────────────────── */

@@ -10,6 +10,7 @@ const state = {
   bookmarks: new Set(JSON.parse(localStorage.getItem('bookmarks') || '[]').map(Number)),
   langs: JSON.parse(localStorage.getItem('langs') || '{"en":true,"rurdu":true,"urdu":true}'),
   fontSize: JSON.parse(localStorage.getItem('fontSize') || '{"arabic":1.75,"trans":0.9}'),
+  theme: localStorage.getItem('theme') || 'dark',
   route: { view: 'home', catId: null, subId: null, breadcrumb: [] },
   lineCache: {},         // subindexId → payload
 };
@@ -26,6 +27,9 @@ const $navBtns = document.querySelectorAll('.nav-btn');
 const $globalSearchBar = document.getElementById('global-search-bar');
 const $globalSearchInput = document.getElementById('global-search-input');
 const $deepSearchCheck = document.getElementById('deep-search-check');
+
+// Appearance
+const $themeLight = document.getElementById('theme-light');
 
 // Language checkboxes
 const $langEn = document.getElementById('lang-en');
@@ -88,6 +92,29 @@ $langUrdu.addEventListener('change', () => {
   state.langs.urdu = $langUrdu.checked;
   applyLangs();
 });
+
+// ── Theming ───────────────────────────────────────────────────────────────────
+function applyTheme() {
+  const isLight = state.theme === 'light';
+  document.body.classList.toggle('light-mode', isLight);
+  if ($themeLight) $themeLight.checked = isLight;
+  localStorage.setItem('theme', state.theme);
+  
+  // Update theme-color meta tag
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) {
+    metaTheme.setAttribute('content', isLight ? '#ffffff' : '#0d1117');
+  }
+}
+
+function toggleTheme() {
+  state.theme = state.theme === 'light' ? 'dark' : 'light';
+  applyTheme();
+}
+
+if ($themeLight) {
+  $themeLight.addEventListener('change', toggleTheme);
+}
 
 // ── Font sizing ───────────────────────────────────────────────────────────────
 function applyFontSizes() {
@@ -858,6 +885,9 @@ async function boot() {
   // Apply saved language visibility
   syncLangCheckboxes();
   applyLangs();
+
+  // Apply theme
+  applyTheme();
 
   // Apply saved font sizes
   syncFontSliders();
